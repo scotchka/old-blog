@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Henry's Data Miscellany : Quantifying novelty with naive Bayes</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="http://scotchka.github.io/theme/css/main.css" type="text/css" />
+        <link href="http://scotchka.github.io/" type="application/atom+xml" rel="alternate" title="Henry's Data Miscellany ATOM Feed" />
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="http://scotchka.github.io/css/ie.css"/>
+                <script src="http://scotchka.github.io/js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="http://scotchka.github.io/css/ie6.css"/><![endif]-->
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            imageFont: null,
+            messageStyle: "none", 
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+            tex2jax: {
+                  inlineMath: [ ['$','$'] ],
+                  displayMath: [ ['$$','$$'] ],
+            processEscapes:true
+            }
+          });
+        </script>
+
+
+
+</head>
+
+<body>
+        
+<header>
+    <h1><a href="http://scotchka.github.io" id="site-title">Henry's Data Miscellany </a> :
+        <a href="http://scotchka.github.io/quantifying-novelty-with-naive-bayes.html" id="page-title">Quantifying novelty with naive Bayes</a></h1>
+<time datetime="2013-11-24T00:00:00">Sun 24 November 2013</time></header>
+<article>
+    <h1>Naive Bayes: not just a dessert topping, also a floor wax!</h1>
+<p>In the <a href="http://scotchka.github.io/noodle-in-a-haystack.html">previous post</a> we demonstrated a recommender for Chinese dishes based on their novelty. We now describe the algorithm in some detail. </p>
+<p>In essence, we are running the usual naive Bayes backwards. The usual Bayesian question would be: given a dish, what is the type of cuisine? But in our case, all the dishes are known to be Chinese. So the question becomes: given that this dish is Chinese, how novel is it relative to all Chinese dishes? So the task is not prediction but rather postdiction. (See <a href="http://scotchka.github.io/how-predictable-is-the-new-york-times.html">here</a> for a quick summary of naive Bayes.)</p>
+<h1>Turning food into numbers</h1>
+<p>Suppose the dish is "kung pao chicken". We use a simple bag of words model and represent the dish as just the words in no particular order: "chicken", "kung", "pao". This is particularly appropriate since menu descriptions seldom use complete sentences and often merely enumerate the ingredients. Hence there is less structure than, say, news articles. For this reason we don't use more elaborate tokenization such as bigrams.</p>
+<p>Next, we map each word into a phonetic string using the <a href="http://en.wikipedia.org/wiki/New_York_State_Identification_and_Intelligence_System">NYSIIS</a> algorithm, implemented in the Python package <a href="https://pypi.python.org/pypi/Fuzzy">Fuzzy</a>. For our example, "kung", "pao", and "chicken" become "CAN", "P", and "CACAN", respectively. This transformation is desirable because ethinic menus have many transliterations, variant spellings, and misspellings. NYSIIS maps words that sound alike to the same string, thereby reducing the number of spurious results. So "kung pao chiken" won't show up as a new and exciting dish.</p>
+<p>Once we have each dish represented as a bag of sounds, we calculate the conditional probabilty for each sound, given the cuisine. Note that we only have one cuisine - all dishes on a Chinese menu are Chinese! The Bayesian posterior is trivially 1, that is, every dish is 100% certain to be Chinese. However, the product of the conditional probabilities for the sounds in a dish is less than one:</p>
+<p>$$P(\textrm{''CAN''}|\textrm{Chinese}) \times P(\textrm{''P''}|\textrm{Chinese}) \times P(\textrm{''CACAN''}|\textrm{Chinese}) &lt; 1$$</p>
+<p>This product is, in the naive Bayes approximation, the probability of the dish, given the cuisine. So it is precisely what we need to quantify how improbable, or novel, a dish is! The smaller the probability, the greater the novelty.</p>
+<h1>Some Chinese dishes are more Chinese than others</h1>
+<p>Throught the <a href="https://dev.locu.com/">locu.com</a> API, we gathered over 100 Chinese restaurant menus in the SF Bay Area and Sacramento, comprising over 20,000 dishes and nearly 3000 sounds. The distribution of the conditional probabilites for the sounds follows from <a href="http://en.wikipedia.org/wiki/Zipf's_law">Zipf's Law</a>:</p>
+<p><img alt="Zipfian distribution" src="zipf.png" /></p>
+<p>We see there are many sounds that are rare, and relatively few sounds that are common. This is not surprising, since Zipf's Law applies to all human languages.</p>
+<p>The distribution of dish probabilties as calculated above forms a bell-like shape:</p>
+<p><img alt="dish novelty" src="novelty.png" /></p>
+<p>Toward the right are the common dishes, and toward the left are the novel dishes. Most dishes fall in between. This is in accord with our intuition - both very rare dishes and very common dishes should be outliers. Alternatively, we may think of each dish as a sample of the sounds, hence the central limit theorem implies that a Gaussian distribution will emerge.</p>
+<h1>Recommendation</h1>
+<p>In the recommender <a href="http://scotchka.github.io/noodle-in-a-haystack.html">form</a>, we simply calculate the probabilities for the dishes submitted, and assign one star to those more than one standard deviation above the average, two stars to those within one standard deviation, and three stars to those more than one standard deviation below the average. We also calculate the average probability for the submitted dishes and return the percentage of the 20,000 dishes in our original data that are below this average. The more unusual the input menu, the higher this percentile.</p>
+<p>In the map, the recommended item for a restaurant is simply the dish with the highest conditional probability that is at least one standard deviation below the average of the 20,000 dishes. (We choose this over the least probable item because that is often a non-food item such as a cocktail.)</p>
+<h1>Further work</h1>
+<p>Nothing in our analysis depended on the cuisine. We chose Chinese simply because Chinese restaurants are numerous and tend to have large menus. This made data collection more efficient, and we were able to show preliminary results after less than a day of data munging. It would be easy to add more cuisines to our recommendation system. An interesting issue would be how to deal with multi-ethnic restaurants, or say a Chinese restaurant that happens to offer lasagna on their menu. There would need be a pre-classifier that chooses the appropriate cuisine(s) for a given dish.</p>
+<p>Dish novelty would be one factor to help the consumer make decisions, along with other information such as user reviews. Someone who is not an adventurous eater can opt for a dish typical of the cuisine. Either way, making a more informed decision leads to a more satisfying dining experience.</p>
+<p>The algorithm can be applied to any recommender, not just food. We can use naive Bayes to find outliers in any context. For example, one can quantify the novelty of an OkCupid profile, or perhaps find people with unusual combinations of interests based on their Facebook activity.</p>
+</article>
+
+        <footer>
+            <nav>
+                <ul>
+                </ul>
+            </nav>
+                <p id="theme-credit"><a href="http://mathieu.agopian.info/mnmlist/theme.html">Thème mnmlist</a></p>
+        </footer>
+
+</body>
+</html>

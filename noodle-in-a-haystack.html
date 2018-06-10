@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <title>Henry's Data Miscellany : Noodle in a Haystack</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="http://scotchka.github.io/theme/css/main.css" type="text/css" />
+        <link href="http://scotchka.github.io/" type="application/atom+xml" rel="alternate" title="Henry's Data Miscellany ATOM Feed" />
+
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+        <!--[if lte IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="http://scotchka.github.io/css/ie.css"/>
+                <script src="http://scotchka.github.io/js/IE8.js" type="text/javascript"></script><![endif]-->
+
+        <!--[if lt IE 7]>
+                <link rel="stylesheet" type="text/css" media="all" href="http://scotchka.github.io/css/ie6.css"/><![endif]-->
+
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            imageFont: null,
+            messageStyle: "none", 
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+            tex2jax: {
+                  inlineMath: [ ['$','$'] ],
+                  displayMath: [ ['$$','$$'] ],
+            processEscapes:true
+            }
+          });
+        </script>
+
+
+
+</head>
+
+<body>
+        
+<header>
+    <h1><a href="http://scotchka.github.io" id="site-title">Henry's Data Miscellany </a> :
+        <a href="http://scotchka.github.io/noodle-in-a-haystack.html" id="page-title">Noodle in a Haystack</a></h1>
+<time datetime="2013-11-08T00:00:00">Fri 08 November 2013</time></header>
+<article>
+    <h1>What to order at a Chinese restaurant?</h1>
+<p>Find a Chinese restaurant menu. Copy and paste a section into the box below, with blank lines separating the items. Click "Rate" to see each dish ranked (from one to three stars) according to how mainstream or novel it is. For example, "Chow Mein" is ubiquitous, whereas "Vegan Pork Belly" would likely be unique to that restaurant. Note that the novelty is calculated relative among the items you submit, so the more items, the more accurate the results will be. We also display an overall rating which compares your submitted menu to other restaurant menus.</p>
+<p>Update: For details on method and implementation, see <a href="http://scotchka.github.io/quantifying-novelty-with-naive-bayes.html">here</a>.</p>
+<form method="post" 
+action="http://ec2-54-219-128-173.us-west-1.compute.amazonaws.com:5001/rate">
+<textarea name='menu' rows="25" cols="100"></textarea><br>
+<input type="submit" value="Rate">   
+</form>
+
+<p>Or you can copy and paste the below menu fragment from <a href="https://foursquare.com/v/mission-chinese-food/4fa89bb2e4b0bad89524b84a/menu">Mission Chinese</a>:</p>
+<div class="codehilite"><pre>Fresh Tofu Poached in Soymilk
+Broad bean paste, soy beans, sesame leaves
+
+Stir Fried Pork Jowl and Radishes
+Fermented black bean, sesame leaves, mint
+
+Salt Cod Fried Rice
+Slow cooked mackerel, Chinese sausage, lettuce, egg
+
+Broccoli Beef Brisket with Smoked Oyster Sauce
+
+Thrice Cooked Bacon
+Shanghainese rice cakes, tofu skin, bitter melon, chili oil
+
+Mapo Tofu
+Pork shoulder, doubanjiang, Sichuan pepper
+
+Kung Pao Pastrami
+Peanuts, celery, potato, explosive chili
+</pre></div>
+
+
+<p>Here is a map of some Chinese restaurants in the San Francisco Bay Area, San Jose, and Sacramento. Click on a colored dot to see the recommended dish! (<a href="http://cdb.io/1eRlY1o">Fullscreen version</a>)</p>
+<iframe width='100%' height='520' frameborder='0' src='http://scotchka.cartodb.com/viz/3b2c8b50-4d67-11e3-a6b5-37411c676e07/embed_map?title=true&description=true&search=false&shareable=false&cartodb_logo=true&layer_selector=true&legends=true&scrollwheel=true&sublayer_options=1&sql=&sw_lat=37.65338320128765&sw_lon=-122.67471313476561&ne_lat=37.9192844858339&ne_lon=-122.01553344726561'></iframe>
+</article>
+
+        <footer>
+            <nav>
+                <ul>
+                </ul>
+            </nav>
+                <p id="theme-credit"><a href="http://mathieu.agopian.info/mnmlist/theme.html">Thème mnmlist</a></p>
+        </footer>
+
+</body>
+</html>
